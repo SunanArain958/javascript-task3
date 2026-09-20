@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Management</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #080d18;
+            color: white;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 35px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #8492b0;
+        }
+
+        .add-box {
+            background: #10192b;
+            border: 1px solid #1e2a42;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .add-box h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form {
+            display: flex;
+            gap: 15px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 15px;
+            background: #151f33;
+            border: 1px solid #293650;
+            border-radius: 9px;
+            outline: none;
+            color: white;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 0 25px;
+            background: #6366f1;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #4f46e5;
+        }
+
+        .search {
+            margin-bottom: 20px;
+        }
+
+        .search input {
+            width: 100%;
+        }
+
+        .student-list {
+            background: #10192b;
+            border: 1px solid #1e2a42;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #1e2a42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-header h2 {
+            font-size: 20px;
+        }
+
+        .total {
+            background: #25275e;
+            color: #8b8eff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .student {
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #1e2a42;
+        }
+
+        .student:last-child {
+            border-bottom: none;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: #25275e;
+            color: #8b8eff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .info {
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .info h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .info p {
+            color: #7e8ca8;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit,
+        .delete {
+            padding: 9px 12px;
+            background: #182238;
+        }
+
+        .edit {
+            color: #9ca9c7;
+        }
+
+        .delete {
+            color: #ff5364;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #71809f;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 20px;
+            }
+
+            .form {
+                flex-direction: column;
+            }
+
+            .form button {
+                height: 48px;
+            }
+
+            .student {
+                padding: 15px;
+                flex-wrap: wrap;
+            }
+
+            .actions {
+                margin-left: auto;
+            }
+
+            .list-header {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>Students</h1>
+            <p>Manage your students in one place</p>
+        </div>
+
+        <div class="add-box">
+            <h2 id="formTitle">Add New Student</h2>
+
+            <div class="form">
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Student Name"
+                >
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Email Address"
+                >
+
+                <button id="addBtn" type="button">
+                    Add Student
+                </button>
+            </div>
+        </div>
+
+        <div class="search">
+            <input
+                type="text"
+                id="search"
+                placeholder="Search student..."
+            >
+        </div>
+
+        <div class="student-list">
+
+            <div class="list-header">
+                <h2>Student List</h2>
+
+                <span class="total" id="total">
+                    0 Students
+                </span>
+            </div>
+
+            <div id="students">
+                <div class="empty">Loading students...</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK: load only once -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+    <script>
+ const firebaseConfig = {
+  apiKey: "AIzaSyCQTi9WgmVFvk1Wx1Xr_6OuqPjIX5niyDM",
+  authDomain: "newproject-7c216.firebaseapp.com",
+  databaseURL: "https://newproject-7c216-default-rtdb.firebaseio.com",
+  projectId: "newproject-7c216",
+  storageBucket: "newproject-7c216.firebasestorage.app",
+  messagingSenderId: "236515743602",
+  appId: "1:236515743602:web:5fb09e49ec0c65acf26feb",
+  measurementId: "G-8CJHKEMRS3"
+};
+const app = initializeApp(firebaseConfig);
+    </script>
+
+    <!-- Main JavaScript: load only once -->
+    <script src="./index.js"></script>
+
+</body>
+</html>
